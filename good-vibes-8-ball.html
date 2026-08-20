@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Good Vibes 8-Ball</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Barlow+Condensed:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt-deep:#06231B;
+    --felt:#0C3A2B;
+    --glow:#3DF0A8;
+    --brass:#D9AE5F;
+    --chalk:#EFEADC;
+    --serif:"Fraunces","Hoefler Text",Georgia,"Noto Serif",serif;
+    --util:"Barlow Condensed","Avenir Next Condensed","Roboto Condensed",system-ui,sans-serif;
+    --tx:0deg;
+    --ty:0deg;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+
+  body{
+    background:
+      radial-gradient(120% 78% at 50% -12%, rgba(217,174,95,.18) 0%, rgba(217,174,95,.04) 34%, transparent 62%),
+      radial-gradient(100% 70% at 50% 44%, var(--felt) 0%, var(--felt-deep) 74%);
+    color:var(--chalk);
+    font-family:var(--util);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(18px,5vh,44px);
+    padding:max(28px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+
+  header{text-align:center;position:relative;z-index:2}
+  .eyebrow{
+    font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;
+    color:var(--brass);opacity:.85;margin-bottom:.5rem;padding-left:.42em;
+  }
+  h1{
+    font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(1.9rem,7vw,2.9rem);letter-spacing:-.01em;line-height:1;
+  }
+
+  /* ---------------- ball ---------------- */
+  .stage{position:relative;z-index:1;display:grid;place-items:center;perspective:900px}
+
+  .shadow{
+    position:absolute;bottom:-4%;width:70%;height:8%;border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.7) 0%, transparent 72%);
+    filter:blur(7px);
+    transition:transform .5s ease,opacity .5s ease;
+  }
+
+  .ball{
+    position:relative;
+    width:min(78vw,344px);
+    aspect-ratio:1;
+    border:0;padding:0;
+    border-radius:50%;
+    cursor:pointer;
+    display:grid;place-items:center;
+    transform-style:preserve-3d;
+    background:
+      radial-gradient(circle at 50% 50%, #16161a 0%, #0b0b0e 58%, #000 100%);
+    box-shadow:
+      inset -26px -30px 60px rgba(0,0,0,.95),
+      inset 16px 18px 40px rgba(255,255,255,.055),
+      inset 0 0 0 1px rgba(255,255,255,.05),
+      0 30px 60px rgba(0,0,0,.6);
+    transform:rotateX(var(--tx)) rotateY(var(--ty));
+    transition:transform .5s cubic-bezier(.2,.8,.3,1);
+    animation:float 7s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{translate:0 0}
+    50%{translate:0 -8px}
+  }
+  .ball:focus-visible{outline:2px solid var(--brass);outline-offset:14px}
+  .ball:active{filter:brightness(1.06)}
+
+  /* key light: hard specular hotspot */
+  .ball .spec{
+    position:absolute;top:10%;left:17%;width:30%;height:21%;border-radius:50%;
+    background:radial-gradient(50% 50% at 42% 40%, rgba(255,255,255,.92) 0%, rgba(255,255,255,.30) 42%, transparent 74%);
+    filter:blur(4px);transform:rotate(-22deg) translateZ(1px);pointer-events:none;
+  }
+  /* soft fill above it */
+  .ball .sheen{
+    position:absolute;top:5%;left:10%;width:62%;height:44%;border-radius:50%;
+    background:radial-gradient(50% 50% at 40% 36%, rgba(255,255,255,.16) 0%, transparent 70%);
+    filter:blur(12px);pointer-events:none;
+  }
+  /* green bounce off the felt, bottom rim */
+  .ball .bounce{
+    position:absolute;inset:1.5%;border-radius:50%;
+    background:
+      radial-gradient(46% 40% at 74% 88%, rgba(61,240,168,.30) 0%, transparent 66%),
+      radial-gradient(40% 34% at 20% 90%, rgba(61,240,168,.16) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  /* terminator: crisp edge dark falloff sells the sphere */
+  .ball .edge{
+    position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    box-shadow:inset 0 0 34px 12px rgba(0,0,0,.85);
+  }
+
+  /* ---------------- window ---------------- */
+  .window{
+    position:relative;
+    width:58%;aspect-ratio:1;border-radius:50%;
+    overflow:hidden;display:grid;place-items:center;
+    transform:translateZ(14px);
+    background:radial-gradient(62% 62% at 50% 36%, #07281E 0%, #031610 62%, #000806 100%);
+    box-shadow:
+      inset 0 10px 22px rgba(0,0,0,.95),
+      inset 0 -6px 16px rgba(61,240,168,.14),
+      0 0 0 4px #08080a,
+      0 0 0 6px rgba(61,240,168,.12),
+      0 0 26px rgba(61,240,168,.14);
+  }
+  /* liquid caustics */
+  .window .liquid{
+    position:absolute;inset:-20%;
+    background:
+      radial-gradient(38% 38% at 30% 34%, rgba(61,240,168,.16) 0%, transparent 70%),
+      radial-gradient(30% 30% at 72% 62%, rgba(61,240,168,.12) 0%, transparent 72%);
+    animation:swirl 14s linear infinite;
+  }
+  @keyframes swirl{to{transform:rotate(360deg)}}
+  /* glass dome */
+  .window .glass{
+    position:absolute;inset:0;border-radius:50%;z-index:5;pointer-events:none;
+    background:linear-gradient(152deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.05) 24%, transparent 44%);
+  }
+
+  .bubble{
+    position:absolute;bottom:-12%;border-radius:50%;
+    background:rgba(180,255,225,.30);
+    filter:blur(1px);
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) scale(.6);opacity:0}
+    18%{opacity:.7}
+    100%{transform:translateY(-160px) scale(1);opacity:0}
+  }
+
+  /* ---------------- the die ---------------- */
+  .die{
+    position:relative;z-index:3;
+    width:86%;aspect-ratio:1;
+    display:grid;place-items:center;
+    transform:rotate(0deg) scale(1);
+    opacity:1;filter:blur(0);
+    transition:opacity .38s ease, transform .52s cubic-bezier(.18,.9,.28,1.08), filter .38s ease;
+  }
+  /* outer faceted gem */
+  .die .facets{
+    position:absolute;inset:0;
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+    background:conic-gradient(from 30deg,
+      #0E7E58 0deg 60deg,
+      #0A5A40 60deg 120deg,
+      #13A272 120deg 180deg,
+      #084732 180deg 240deg,
+      #0D6E4D 240deg 300deg,
+      #16B27E 300deg 360deg);
+    filter:drop-shadow(0 0 12px rgba(61,240,168,.35));
+  }
+  /* inner face where the words live */
+  .die .face-fill{
+    position:absolute;inset:20%;
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+    background:linear-gradient(165deg,rgba(6,42,30,.96) 0%,rgba(2,14,10,.98) 100%);
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.6);
+  }
+  /* thin lit edge across the gem's widest facet seam */
+  .die .seam{
+    position:absolute;inset:0;
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+    background:
+      linear-gradient(90deg,transparent 49.6%,rgba(190,255,225,.22) 50%,transparent 50.4%),
+      linear-gradient(150deg,transparent 49.7%,rgba(190,255,225,.14) 50%,transparent 50.3%),
+      linear-gradient(30deg,transparent 49.7%,rgba(190,255,225,.14) 50%,transparent 50.3%);
+  }
+
+  .fortune{
+    position:relative;z-index:4;
+    width:60%;text-align:center;
+    font-family:var(--serif);font-weight:600;
+    font-size:clamp(.78rem,3.3vw,.98rem);
+    line-height:1.16;color:#EAFFF4;
+    text-shadow:0 0 12px rgba(61,240,168,.45),0 1px 3px rgba(0,0,0,.7);
+    text-wrap:balance;
+  }
+
+  /* shaking state */
+  .stage.thinking .die{
+    opacity:0;
+    transform:rotate(-140deg) scale(.42);
+    filter:blur(6px);
+  }
+  .stage.thinking .shadow{transform:scaleX(1.08);opacity:.72}
+
+  @keyframes shake{
+    0%{transform:rotateX(var(--tx)) rotateY(var(--ty)) translate(0,0)}
+    12%{transform:rotateX(-14deg) rotateY(-16deg) translate(-10px,-6px)}
+    28%{transform:rotateX(12deg) rotateY(15deg) translate(9px,5px)}
+    44%{transform:rotateX(-10deg) rotateY(11deg) translate(-8px,5px)}
+    60%{transform:rotateX(8deg) rotateY(-9deg) translate(7px,-4px)}
+    76%{transform:rotateX(-5deg) rotateY(5deg) translate(-4px,2px)}
+    100%{transform:rotateX(var(--tx)) rotateY(var(--ty)) translate(0,0)}
+  }
+  .stage.thinking .ball{animation:shake .68s cubic-bezier(.36,.07,.19,.97)}
+
+  footer{
+    position:relative;z-index:2;text-align:center;
+    font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--brass);opacity:.7;padding-left:.28em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ball{animation:none}
+    .stage.thinking .ball{animation:none}
+    .window .liquid,.bubble{animation:none}
+    .stage.thinking .die{transform:none;filter:none}
+  }
+
+  @media (max-height:640px){
+    h1{font-size:1.6rem}
+    .ball{width:min(58vw,244px)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Made for Jane</p>
+  <h1>Good Vibes 8-Ball</h1>
+</header>
+
+<div class="stage" id="stage">
+  <div class="shadow"></div>
+  <button class="ball" id="ball" aria-label="Ask the 8-ball">
+    <span class="sheen"></span>
+    <span class="spec"></span>
+    <span class="bounce"></span>
+    <span class="edge"></span>
+    <div class="window">
+      <span class="liquid"></span>
+      <span class="bubble" style="left:26%;width:7px;height:7px;animation-duration:6.5s;animation-delay:.4s"></span>
+      <span class="bubble" style="left:58%;width:5px;height:5px;animation-duration:8s;animation-delay:2.1s"></span>
+      <span class="bubble" style="left:74%;width:8px;height:8px;animation-duration:7.2s;animation-delay:4.3s"></span>
+      <div class="die">
+        <span class="facets"></span>
+        <span class="face-fill"></span>
+        <span class="seam"></span>
+        <p class="fortune" id="fortune" aria-live="polite">Ask me about Jane</p>
+      </div>
+      <span class="glass"></span>
+    </div>
+  </button>
+</div>
+
+<footer>Tap the ball</footer>
+
+<script>
+  const fortunes = [
+    "Signs point to Jane",
+    "Jane, you've got this",
+    "Jane makes rooms better",
+    "Jane was right, as usual",
+    "Jane is the fun one",
+    "Today is on Jane's side",
+    "Nobody does it like Jane",
+    "Jane's instincts: undefeated",
+    "Take up the whole room, Jane",
+    "Jane's people adore her",
+    "The hard part is behind Jane",
+    "Jane has done harder than this",
+    "Ask for it, Jane. Then ask again",
+    "Outlook: bright, obviously",
+    "Jane is not behind",
+    "Jane, do the brave thing",
+    "Rest counts too, Jane",
+    "Someone is glad Jane texted",
+    "It will be funny later, Jane",
+    "Good things are coming for Jane",
+    "Jane is allowed to want it",
+    "Let it be easy, Jane",
+    "Keep going, Jane. You're close",
+    "It's a yes for Jane"
+  ];
+
+  const stage = document.getElementById('stage');
+  const ball = document.getElementById('ball');
+  const fortune = document.getElementById('fortune');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Shuffle bag: every line shows once before any repeats.
+  let bag = [];
+  function draw(){
+    if(!bag.length){
+      bag = fortunes.filter(f => f !== fortune.textContent);
+      for(let i = bag.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+      }
+    }
+    return bag.pop();
+  }
+
+  let busy = false;
+  function ask(){
+    if(busy) return;
+    busy = true;
+    stage.classList.add('thinking');
+    const wait = reduced.matches ? 180 : 430;
+    setTimeout(() => { fortune.textContent = draw(); }, wait);
+    setTimeout(() => { stage.classList.remove('thinking'); busy = false; }, wait + 200);
+  }
+  ball.addEventListener('click', ask);
+
+  // Tilt the sphere toward the pointer for depth (mouse/trackpad only).
+  if(window.matchMedia('(pointer:fine)').matches && !reduced.matches){
+    window.addEventListener('pointermove', e => {
+      const r = ball.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width/2)) / r.width;
+      const dy = (e.clientY - (r.top + r.height/2)) / r.height;
+      const clamp = v => Math.max(-1, Math.min(1, v));
+      document.documentElement.style.setProperty('--ty', (clamp(dx) * 14).toFixed(2) + 'deg');
+      document.documentElement.style.setProperty('--tx', (clamp(dy) * -14).toFixed(2) + 'deg');
+    });
+  }
+</script>
+</body>
+</html>
