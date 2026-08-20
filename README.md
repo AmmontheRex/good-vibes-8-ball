@@ -5,12 +5,11 @@ A single-file magic 8-ball web toy. Pure HTML/CSS/JS — no build step, no depen
 
 ## Files
 
-- `good-vibes-8-ball.html` — the entire app
+- `index.html` — the entire app
 
 ## Hosting
 
-Serve the directory with any static web server. Point the site root at
-`good-vibes-8-ball.html` (or copy/symlink it to `index.html`).
+Serve the directory with any static web server — `index.html` is the entry point.
 
 nginx example:
 
@@ -19,7 +18,7 @@ server {
     listen 80;
     server_name _;
     root /var/www/good-vibes-8-ball;
-    index good-vibes-8-ball.html;
+    index index.html;
 }
 ```
 
